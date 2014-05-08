@@ -66,6 +66,7 @@ var searchFavoriteFollow = function(qc) {
             robot.twit.post('favorites/create', { id: data.statuses[0].id_str }, function(err, reply) {
               if(err) return handleError(err);
               console.log('\nFavorited: ' + data.statuses[0].id_str);
+              io.socket.emit('server data', ">> Favorited Tweet " +name=" at "+);
             });
             
             //Follow all 12 users
@@ -73,6 +74,7 @@ var searchFavoriteFollow = function(qc) {
               if(err) return handleError(err);
               var name = reply.screen_name;
               console.log('\nMingle: followed @' + name);
+              io.socket.emit('server data', ">> Followed @" +name+" at "+);
             });
         });
         

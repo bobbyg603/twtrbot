@@ -11,11 +11,13 @@
     
     <script src="/socket.io/socket.io.js"></script>
     <script>
-      var socket = io.connect('https://twtrbot-c9-bobbyg603.c9.io/');
+      //var socket = io.connect('https://twtrbot-c9-bobbyg603.c9.io/');
+      var socket = io.connect('http://twtrbot.herokuapp.com/');
+      
       socket.on('server data', function (data) {
         //console.log(data);
         var searchResults = document.getElementById('searchResults');
-        searchResults.innerHTML = data;
+        searchResults.innerHTML += "<br/><br/>" + data;
       });
 
     function sendDataToServer()
