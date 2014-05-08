@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>twtrbot</title>
+    <meta name="description" content="A continously running twitterbot that performs a variety of tasks">
+    <meta name="author" content="@bobbyg603">
+
+    <!-- styles -->
+    <link href="stylesheets/style.css" rel="stylesheet">
+    
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      var socket = io.connect('https://twtrbot-c9-bobbyg603.c9.io/');
+      socket.on('server data', function (data) {
+        //console.log(data);
+        var searchResults = document.getElementById('searchResults');
+        searchResults.innerHTML = data;
+      });
+
+    function sendDataToServer()
+    {
+        //alert("Button clicked!");
+        socket.emit('client data', document.getElementById("input1").value);
+    }
+   </script>
+    
+
+  </head>
+  <body>
+  
+    <h2>twtrbot 0.1</h2>
+    
+    <form onSubmit='sendDataToServer();'>        
+      <input id="input1" type="text"/>
+      <input type="submit" value="Submit">
+    </form>
+    <hr/>
+    <div id="searchResults">
+        
+    </div>
+    
+  </body>
+</html>

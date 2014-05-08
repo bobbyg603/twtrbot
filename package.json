@@ -1,0 +1,14 @@
+{
+  "name": "twtrbot",
+  "version": "0.0.0",
+  "description": "A continously running twitterbot that performs a variety of tasks",
+  "main": "server.js",
+  "repository": "",
+  "author": "Bobby Galli <bobbyg603@gmail.com",
+  "dependencies": {
+    "twit":         "~1.1.14",
+    "express":      "~4.1.1",
+    "socket.io":    "~0.9.16",
+    "ejs":          "~1.0.0" 
+  }
+}
