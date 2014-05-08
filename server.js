@@ -66,7 +66,7 @@ var searchFavoriteFollow = function(qc) {
             robot.twit.post('favorites/create', { id: data.statuses[0].id_str }, function(err, reply) {
               if(err) return handleError(err);
               console.log('\nFavorited: ' + data.statuses[0].id_str);
-              io.socket.emit('server data', ">> Favorited Tweet " +name=" at "+);
+              io.socket.emit('server data', ">> Favorited Tweet " +name+" at "+datestring()+"<br/>");
             });
             
             //Follow all 12 users
@@ -74,7 +74,7 @@ var searchFavoriteFollow = function(qc) {
               if(err) return handleError(err);
               var name = reply.screen_name;
               console.log('\nMingle: followed @' + name);
-              io.socket.emit('server data', ">> Followed @" +name+" at "+);
+              io.socket.emit('server data', ">> Followed @" +name+" at "+datestring()+"<br/>");
             });
         });
         
@@ -89,10 +89,18 @@ setInterval(function(){
     //Loop through the search terms
     searchFavoriteFollow(0);
         
-//} ,10000);
-},2160000);
+} ,10000);
+//},2160000);
 
 function handleError(err) {
   console.error('response status:', err.statusCode);
   console.error('data:', err.data);
+}
+
+//get date string for today's date (e.g. '2014-01-01')
+function datestring () {
+  var d = new Date(Date.now() - 5*60*60*1000);  //est timezone
+  return d.getUTCFullYear()   + '-'
+     +  (d.getUTCMonth() + 1) + '-'
+     +   d.getDate();
 }
