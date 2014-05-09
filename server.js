@@ -5,10 +5,6 @@
 //-----------------------------------------------------------------------
 //-----------------------------------------------------------------------
 
-//Include 3rd party packages
-var ejs = require('ejs');
-var twit = require('twit');
-
 //Build the web server
 var express = require('express');
 var app = express();
@@ -30,8 +26,26 @@ server.listen(process.env.PORT);
 //Start the socket
 io.sockets.on('connection', function (socket) {
     socket.on('client data', function (clientData) {
-    console.log(clientData);
-    //searchQuery=clientData;
+        console.log(clientData);
+        //searchQuery=clientData;
+    });
+    //If the user wants to add a query facilitate that
+    socket.on('add query', function(query){
+        if(checkExists(query)===-1) {
+            searchQuery.push(query);
+            socket.emit('server data', query + " added successfully");
+            socket.emit('server data', JSON.stringify(searchQuery));
+        } else socket.emit('server data', query+" already exists!");
+    });
+    //If the user wants to remove a query facilitate that
+    socket.on('remove query', function(query){
+        var index = checkExists(query);
+        if(index===-1) socket.emit('server data', query+" already exists!");
+        else {
+            searchQuery.splice(index,1);
+            socket.emit('server data', query + " removed successfully");
+            socket.emit('server data', JSON.stringify(searchQuery));
+        }
     });
     socket.emit('server data', JSON.stringify(searchQuery));
 });  
@@ -48,7 +62,6 @@ var robot = new bot(config);
 //var searchQuery = ['weed' , 'marijuana' , 'pot -crock -pan' , 'hash -tag' , 'dab' , 'dabs' , 'bong' , 'ganja', 'blaze' , 'kush', 'legalize' , '420'];
 var searchQuery = ['electronic','circuit','computer','LED','light'];
 
-    
 //Do the following every 2150000 ms (36 minutes == 40 times a day)
 setInterval(function(){
         
@@ -61,8 +74,6 @@ setInterval(function(){
 
 //Function that searches all data in searchQuery[], favorites the relevant tweet and follows the user
 var searchFavoriteFollow = function(qc) {
-    
-    //console.log("made it here!");
     
     //Have we tried all the seach queries? Yes -> Do nothing, No -> Keep going.
     if(qc >= searchQuery.length) ;
@@ -80,7 +91,7 @@ var searchFavoriteFollow = function(qc) {
             robot.twit.post('favorites/create', { id: data.statuses[0].id_str }, function(err, reply) {
               if(err) return handleError(err);
               console.log('\nFavorited: ' + data.statuses[0].id_str);
-              io.sockets.emit('server data', ">> Favorited Tweet " +data.statuses[0].id_str+" at "+datestring()+"<br/>");
+              io.sockets.emit('server data', ">> Favorited Tweet " +data.statuses[0].text+" at "+timestring()+" on "+datestring()+"<br/>");
             });
             
             //Follow all 12 users
@@ -88,7 +99,7 @@ var searchFavoriteFollow = function(qc) {
               if(err) return handleError(err);
               var name = reply.screen_name;
               console.log('\nMingle: followed @' + name);
-              io.sockets.emit('server data', ">> Followed @" +data.statuses[0].user.screen_name+" at "+datestring()+"<br/>");
+              io.sockets.emit('server data', ">> Followed @" +data.statuses[0].user.screen_name+" at "+timestring()+" on "+datestring()+"<br/>");
             });
         });
         
@@ -97,15 +108,29 @@ var searchFavoriteFollow = function(qc) {
     }
 };
 
+//Handles get/post errors
 function handleError(err) {
   console.error('response status:', err.statusCode);
   console.error('data:', err.data);
 }
 
-//get date string for today's date (e.g. '2014-01-01')
+//Get date string for today's date (e.g. '2014-01-01')
 function datestring () {
   var d = new Date(Date.now() - 5*60*60*1000);  //est timezone
   return d.getUTCFullYear()   + '-'
      +  (d.getUTCMonth() + 1) + '-'
      +   d.getDate();
+}
+
+//Get time string for now (military time)
+function timestring () {
+    var current = new Date();
+    var time = current.getHours() + ":" +current.getMinutes() + ":" +current.getSeconds();
+    return time;
+}
+
+//Checks if query exists in searchQuery[], returns -1 if false
+function checkExists(q){
+    console.log(searchQuery.indexOf(q));
+    return searchQuery.indexOf(q);
 }

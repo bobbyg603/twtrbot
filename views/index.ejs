@@ -17,14 +17,18 @@
       
       socket.on('server data', function (data) {
         //console.log(data);
-        var searchResults = document.getElementById('searchResults');
-        searchResults.innerHTML += "<br/><br/>" + data;
+        var log = document.getElementById('log');
+        log.innerHTML += "<br/>" + data;
       });
 
     function sendDataToServer()
     {
         //alert("Button clicked!");
-        socket.emit('client data', document.getElementById("input1").value);
+        var addQuery = document.getElementById("addQuery").value;
+        var removeQuery = document.getElementById("removeQuery").value;
+        
+        if(addQuery!="") socket.emit('add query', addQuery);
+        if(removeQuery!="") socket.emit('remove query', removeQuery);
     }
    </script>
     
@@ -32,16 +36,15 @@
   </head>
   <body>
   
-    <h2>twtrbot 0.1</h2>
+    <h2>twtrbot 0.2</h2>
     
     <form onSubmit='sendDataToServer();'>        
-      <input id="input1" type="text"/>
+      <input id="addQuery" type="text"/>Add Query
+      <input id="removeQuery" type="text"/>Remove Query
       <input type="submit" value="Submit">
     </form>
     <hr/>
-    <div id="searchResults">
-        
-    </div>
+    <div id="log"></div>
     
   </body>
 </html>
