@@ -29,11 +29,11 @@ server.listen(process.env.PORT);
 
 //Start the socket
 io.sockets.on('connection', function (socket) {
-  socket.on('client data', function (clientData) {
+    socket.on('client data', function (clientData) {
     console.log(clientData);
-    searchQuery=clientData;
-  });
-  socket.emit('server data', JSON.stringify(searchQuery));
+    //searchQuery=clientData;
+    });
+    socket.emit('server data', JSON.stringify(searchQuery));
 });  
 
 //-----------------------------------------------------------------------
@@ -48,8 +48,21 @@ var robot = new bot(config);
 //var searchQuery = ['weed' , 'marijuana' , 'pot -crock -pan' , 'hash -tag' , 'dab' , 'dabs' , 'bong' , 'ganja', 'blaze' , 'kush', 'legalize' , '420'];
 var searchQuery = ['electronic','circuit','computer','LED','light'];
 
+    
+//Do the following every 2150000 ms (36 minutes == 40 times a day)
+setInterval(function(){
+        
+        //Loop through the search terms
+        searchFavoriteFollow(0);
+            
+} ,20000);
+//},2160000);
+
 //Function that searches all data in searchQuery[], favorites the relevant tweet and follows the user
 var searchFavoriteFollow = function(qc) {
+    
+    //console.log("made it here!");
+    
     //Have we tried all the seach queries? Yes -> Do nothing, No -> Keep going.
     if(qc >= searchQuery.length) ;
     else {
@@ -66,7 +79,7 @@ var searchFavoriteFollow = function(qc) {
             robot.twit.post('favorites/create', { id: data.statuses[0].id_str }, function(err, reply) {
               if(err) return handleError(err);
               console.log('\nFavorited: ' + data.statuses[0].id_str);
-              io.socket.emit('server data', ">> Favorited Tweet " +name+" at "+datestring()+"<br/>");
+              io.sockets.emit('server data', ">> Favorited Tweet " +data.statuses[0].id_str+" at "+datestring()+"<br/>");
             });
             
             //Follow all 12 users
@@ -74,7 +87,7 @@ var searchFavoriteFollow = function(qc) {
               if(err) return handleError(err);
               var name = reply.screen_name;
               console.log('\nMingle: followed @' + name);
-              io.socket.emit('server data', ">> Followed @" +name+" at "+datestring()+"<br/>");
+              io.sockets.emit('server data', ">> Followed @" +data.statuses[0].user.screen_name+" at "+datestring()+"<br/>");
             });
         });
         
@@ -82,15 +95,6 @@ var searchFavoriteFollow = function(qc) {
         searchFavoriteFollow(qc+1);
     }
 };
-    
-//Do the following every 2150000 ms (36 minutes == 40 times a day)
-setInterval(function(){
-        
-    //Loop through the search terms
-    searchFavoriteFollow(0);
-        
-} ,10000);
-//},2160000);
 
 function handleError(err) {
   console.error('response status:', err.statusCode);
