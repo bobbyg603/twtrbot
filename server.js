@@ -55,8 +55,9 @@ setInterval(function(){
         //Loop through the search terms
         searchFavoriteFollow(0);
             
-} ,20000);
-//},2160000);
+//} ,20000);
+//},2150000);
+},1075000);
 
 //Function that searches all data in searchQuery[], favorites the relevant tweet and follows the user
 var searchFavoriteFollow = function(qc) {
