@@ -60,7 +60,9 @@ var robot = new bot(config);
 
 //Define what we are looking for
 //var searchQuery = ['weed' , 'marijuana' , 'pot -crock -pan' , 'hash -tag' , 'dab' , 'dabs' , 'bong' , 'ganja', 'blaze' , 'kush', 'legalize' , '420'];
-var searchQuery = ['electronic','circuit','computer','LED','light'];
+//var searchQuery = ['electronic','circuit','computer','LED','light'];
+var searchQuery = ["rocket","moon","crypto","space","tesla","nasa"];
+//var searchQuery = [];
 
 //Do the following every 2150000 ms (36 minutes == 40 times a day)
 setInterval(function(){
@@ -68,7 +70,7 @@ setInterval(function(){
         //Loop through the search terms
         searchFavoriteFollow(0);
             
-//} ,20000);
+//} ,40000);
 //},2150000);
 },1075000);
 
@@ -81,26 +83,29 @@ var searchFavoriteFollow = function(qc) {
         
         //Search for tweets containing a query of interest, get their screen_names' and ids'
         robot.twit.get('search/tweets', { q: searchQuery[qc], count: 1 }, function (err,data,response) { 
-            
-            //console.log(JSON.stringify(data.statuses[0].user));
-            console.log("search: "+searchQuery[qc]);
-            console.log("user: "  +JSON.stringify(data.statuses[0].user.screen_name));
-            console.log("tweet: " +JSON.stringify(data.statuses[0].text));
-            
-            //Favorite all 12 tweets
-            robot.twit.post('favorites/create', { id: data.statuses[0].id_str }, function(err, reply) {
-              if(err) return handleError(err);
-              console.log('\nFavorited: ' + data.statuses[0].id_str);
-              io.sockets.emit('server data', ">> Favorited Tweet " +data.statuses[0].text+" at "+timestring()+" on "+datestring()+"<br/>");
-            });
-            
-            //Follow all 12 users
-            robot.twit.post('friendships/create', { id: data.statuses[0].user.id }, function(err, reply) {
-              if(err) return handleError(err);
-              var name = reply.screen_name;
-              console.log('\nMingle: followed @' + name);
-              io.sockets.emit('server data', ">> Followed @" +data.statuses[0].user.screen_name+" at "+timestring()+" on "+datestring()+"<br/>");
-            });
+           
+            if(data.statuses[0]===undefined) console.log("Error undefined! (Too many queries?)");
+            else{
+                //console.log(JSON.stringify(data.statuses[0].user));
+                console.log("search: "+searchQuery[qc]);
+                console.log("user: "  +JSON.stringify(data.statuses[0].user.screen_name));
+                console.log("tweet: " +JSON.stringify(data.statuses[0].text));
+                
+                //Favorite all 12 tweets
+                robot.twit.post('favorites/create', { id: data.statuses[0].id_str }, function(err, reply) {
+                  if(err) return handleError(err);
+                  console.log('\nFavorited: ' + data.statuses[0].id_str);
+                  io.sockets.emit('server data', ">> Favorited Tweet " +data.statuses[0].text+" at "+timestring()+" on "+datestring()+"<br/>");
+                });
+                
+                //Follow all 12 users
+                robot.twit.post('friendships/create', { id: data.statuses[0].user.id }, function(err, reply) {
+                  if(err) return handleError(err);
+                  var name = reply.screen_name;
+                  console.log('\nMingle: followed @' + name);
+                  io.sockets.emit('server data', ">> Followed @" +data.statuses[0].user.screen_name+" at "+timestring()+" on "+datestring()+"<br/>");
+                });  
+            }
         });
         
         //Recursively loop through each searchQuery
